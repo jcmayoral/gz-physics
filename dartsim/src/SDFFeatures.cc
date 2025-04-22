@@ -677,16 +677,11 @@ Identity SDFFeatures::ConstructSdfLink(
 
   if(isKinematic){
     gzerr << "Kinematic tag found" << bodyProperties.mName << std::endl;
-    //gzwarn << "Kinematic tag found" << bodyProperties.mInertia<< std::endl;
     bodyProperties.mInertia.setMass(sdfInertia.MassMatrix().Mass());
     bodyProperties.mGravityMode = _sdfLink.EnableGravity();
-    //modelInfo.model->SetStatic(true);
-    //bodyProperties.mInertia.setLocalCOM(localCom);  
     bodyProperties.mInertia.setMoment(I_link);
-    //bodyProperties.mInertia.setMoment(Eigen::Matrix3d::Identity());
-
+   
     bodyProperties.mInertia.setLocalCOM(localCom);  
-    //bodyProperties.mInertia.setLocalCOM(localCom2);  
     bodyProperties.mFrictionCoeff = 0;
 
     //jointProperties.mActuatorType = dart::dynamics::Joint::ActuatorType::PASSIVE;

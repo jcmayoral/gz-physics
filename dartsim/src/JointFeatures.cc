@@ -143,7 +143,6 @@ void JointFeatures::SetJointForce(
   {
     joint->setActuatorType(dart::dynamics::Joint::FORCE);
   }
-  //gzerr << "FORCE JOINT " << joint->getName() << joint->getForces() << " " << _value <<std::endl;
   this->ReferenceInterface<JointInfo>(_id)->joint->setCommand(_dof, _value);
 }
 
@@ -184,11 +183,6 @@ void JointFeatures::SetJointVelocityCommand(
       informed = true;
     }
   }
-<<<<<<< HEAD
-=======
-  //joint->setActuatorType(dart::dynamics::Joint::VELOCITY);
-
->>>>>>> f243ff85 (save current changes)
   joint->setCommand(_dof, _value);
 }
 
