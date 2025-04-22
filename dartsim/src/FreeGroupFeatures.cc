@@ -250,20 +250,11 @@ void FreeGroupFeatures::SetFreeGroupWorldLinearVelocity(
   Eigen::Vector3d forces = Eigen::Vector3d::Zero();
   //info.model->setForces(forces);
 
-<<<<<<< HEAD
-=======
-  gzwarn <<"SetFreeGroupWorldLinearVelocity" << info.link->getName() << std::endl;
-  Eigen::Vector3d forces = Eigen::Vector3d::Zero();
-  //info.model->setForces(forces)
-  gzwarn <<"2222222222222 " << info.model->getVelocities() << std::endl;
-
->>>>>>> f6a26ecd (debugging)
   for (std::size_t i = 0; i < info.model->getNumTrees(); ++i)
   {
     auto *bn = info.model->getRootBodyNode(i);
  
     // Clear forces and disable dynamics
-<<<<<<< HEAD
     //bn->setGravityMode(false); // Disable gravity
     //bn->clearExternalForces(); // Clear external forces
     //bn->clearInternalForces(); // Clear internal forces
@@ -271,16 +262,6 @@ void FreeGroupFeatures::SetFreeGroupWorldLinearVelocity(
     gzerr << "Joint: " << bn->getName() << std::endl;
     // TODO FINISHED
     static_cast<dart::dynamics::KinematicJoint*>(bn->getParentJoint())
-=======
-    bn->setGravityMode(false); // Disable gravity
-    bn->clearExternalForces(); // Clear external forces
-    bn->clearInternalForces(); // Clear internal forces
-    gzerr << "Joint: " << bn->getName() << std::endl;
-
-    const Eigen::Vector3d new_v = bn->getLinearVelocity() + delta_v;
-
-    static_cast<dart::dynamics::FreeJoint*>(bn->getParentJoint())
->>>>>>> f6a26ecd (debugging)
         ->setLinearVelocity(new_v);
   }
 }

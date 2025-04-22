@@ -183,6 +183,12 @@ void JointFeatures::SetJointVelocityCommand(
       informed = true;
     }
   }
+<<<<<<< HEAD
+=======
+  //joint->setActuatorType(dart::dynamics::Joint::VELOCITY);
+  gzwarn << "THIS IS CALLED " << joint->getName() << std::endl;
+
+>>>>>>> 94f0765f (debugging)
   joint->setCommand(_dof, _value);
 }
 
