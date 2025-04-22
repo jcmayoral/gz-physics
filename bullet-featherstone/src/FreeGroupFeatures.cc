@@ -140,6 +140,15 @@ void FreeGroupFeatures::SetFreeGroupWorldAngularVelocity(
 
   if (model)
   {
+#if BT_BULLET_VERSION >= 307
+    if (model->body->isBaseKinematic())
+    {
+      auto* world = this->ReferenceInterface<WorldInfo>(model->world);
+      btTransform predictedTrans;
+      btTransformUtil::integrateTransform(model->body->getBaseWorldTransform(), model->body->getBaseVel(), convertVec(_angularVelocity), world->stepSize, predictedTrans);
+      model->body->SetBaseWorldTransform(predictedTrans);
+    }
+#endif
     model->body->setBaseOmega(convertVec(_angularVelocity));
     model->body->wakeUp();
   }
@@ -154,6 +163,15 @@ void FreeGroupFeatures::SetFreeGroupWorldLinearVelocity(
   // Set Base Vel
   if (model)
   {
+#if BT_BULLET_VERSION >= 307
+    if (model->body->isBaseKinematic())
+    {
+      auto* world = this->ReferenceInterface<WorldInfo>(model->world);
+      btTransform predictedTrans;
+      btTransformUtil::integrateTransform(model->body->getBaseWorldTransform(), convertVec(_linearVelocity), model->body->getBaseOmega(), world->stepSize, predictedTrans);
+      model->body->SetBaseWorldTransform(predictedTrans);
+    }
+#endif
     model->body->setBaseVel(convertVec(_linearVelocity));
     model->body->wakeUp();
   }
