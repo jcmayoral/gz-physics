@@ -162,10 +162,10 @@ void JointFeatures::SetJointVelocityCommand(
            << "]. The command will be ignored\n";
     return;
   }
-  if (joint->getActuatorType() != dart::dynamics::Joint::SERVO)
-  {
-    joint->setActuatorType(dart::dynamics::Joint::SERVO);
-  }
+  //if (joint->getActuatorType() != dart::dynamics::Joint::SERVO)
+  //{
+  //  joint->setActuatorType(dart::dynamics::Joint::SERVO);
+  //}
   // warn about bug https://github.com/dartsim/dart/issues/1583
   if ((joint->getPositionLowerLimit(_dof) > -1e16 ||
        joint->getPositionUpperLimit(_dof) < 1e16 ) &&
@@ -183,12 +183,6 @@ void JointFeatures::SetJointVelocityCommand(
       informed = true;
     }
   }
-<<<<<<< HEAD
-=======
-  //joint->setActuatorType(dart::dynamics::Joint::VELOCITY);
-  gzwarn << "THIS IS CALLED " << joint->getName() << std::endl;
-
->>>>>>> 94f0765f (debugging)
   joint->setCommand(_dof, _value);
 }
 
