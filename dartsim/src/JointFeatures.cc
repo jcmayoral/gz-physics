@@ -143,6 +143,7 @@ void JointFeatures::SetJointForce(
   {
     joint->setActuatorType(dart::dynamics::Joint::FORCE);
   }
+  gzwarn << "FORCE JOINT " << joint->getName() << joint->getVelocities() << " " << _value << " FORCES " << joint->getForces()<<std::endl;
   this->ReferenceInterface<JointInfo>(_id)->joint->setCommand(_dof, _value);
 }
 
@@ -162,10 +163,10 @@ void JointFeatures::SetJointVelocityCommand(
            << "]. The command will be ignored\n";
     return;
   }
-  //if (joint->getActuatorType() != dart::dynamics::Joint::SERVO)
-  //{
-  //  joint->setActuatorType(dart::dynamics::Joint::SERVO);
-  //}
+  if (joint->getActuatorType() != dart::dynamics::Joint::SERVO)
+  {
+    joint->setActuatorType(dart::dynamics::Joint::SERVO);
+  } 
   // warn about bug https://github.com/dartsim/dart/issues/1583
   if ((joint->getPositionLowerLimit(_dof) > -1e16 ||
        joint->getPositionUpperLimit(_dof) < 1e16 ) &&
@@ -183,6 +184,11 @@ void JointFeatures::SetJointVelocityCommand(
       informed = true;
     }
   }
+<<<<<<< HEAD
+=======
+  gzerr << "VELOCITY JOINT " << joint->getName() << joint->getVelocities() << " " << _value << " FORCES " << joint->getForces()<<std::endl;
+
+>>>>>>> f524283a (weldjoint)
   joint->setCommand(_dof, _value);
 }
 

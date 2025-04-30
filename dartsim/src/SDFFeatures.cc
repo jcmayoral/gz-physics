@@ -1188,6 +1188,8 @@ Identity SDFFeatures::ConstructSdfJoint(
     // care of below. All other properties like joint limits, stiffness, etc,
     // will be the default values of +/- infinity or 0.0.
     joint = _child->moveTo<dart::dynamics::BallJoint>(_parent);
+    gzerr << "Joint type: BALL" << std::endl;
+
   }
   // TODO(MXG): Consider adding dartsim support for a CONTINUOUS joint type.
   // Alternatively, support the CONTINUOUS joint type by wrapping the
@@ -1197,11 +1199,13 @@ Identity SDFFeatures::ConstructSdfJoint(
   // wrapping a RevoluteJoint type.
   else if (::sdf::JointType::PRISMATIC == type)
   {
+    gzerr << "Joint type: PRISMATIC" << std::endl;
     joint = ConstructSingleAxisJoint<dart::dynamics::PrismaticJoint>(
           _modelInfo, _sdfJoint, _parent, _child, T_joint);
   }
   else if (::sdf::JointType::REVOLUTE == type)
   {
+    gzerr << "Joint type: REVOLUTE" << std::endl;
     joint = ConstructSingleAxisJoint<dart::dynamics::RevoluteJoint>(
           _modelInfo, _sdfJoint, _parent, _child, T_joint);
   }
@@ -1210,6 +1214,7 @@ Identity SDFFeatures::ConstructSdfJoint(
   // RevoluteJoint objects into one.
   else if (::sdf::JointType::SCREW == type)
   {
+    gzerr << "Joint type: SCREW" << std::endl;
     auto *screw = ConstructSingleAxisJoint<dart::dynamics::ScrewJoint>(
           _modelInfo, _sdfJoint, _parent, _child, T_joint);
 
@@ -1218,6 +1223,7 @@ Identity SDFFeatures::ConstructSdfJoint(
   }
   else if (::sdf::JointType::UNIVERSAL == type)
   {
+    gzerr << "Joint type: UNIVERSAL" << std::endl;
     joint = ConstructUniversalJoint(
           _modelInfo, _sdfJoint, _parent, _child, T_joint);
   }
