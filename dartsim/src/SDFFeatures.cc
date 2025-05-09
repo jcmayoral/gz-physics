@@ -711,6 +711,8 @@ Identity SDFFeatures::ConstructSdfLink(
     
   else{
     gzerr << "Kinematic tag not found " << bodyProperties.mName << std::endl;
+    jointProperties.mName = bodyProperties.mName + "_KinematicJoint";
+
     bodyProperties.mInertia.setMass(sdfInertia.MassMatrix().Mass());
     bodyProperties.mInertia.setMoment(I_link);
     bodyProperties.mInertia.setLocalCOM(localCom);  
@@ -1143,7 +1145,8 @@ Identity SDFFeatures::ConstructSdfJoint(
   {
     auto childsParentJoint = _child->getParentJoint();
     std::string parentName = worldParent? "world" : _parent->getName();
-    if (childsParentJoint->getType() != "FreeJoint")
+    if (childsParentJoint->getType() != "FreeJoint" && 
+      childsParentJoint->getType() != "KinematicJoint")
     {
       gzerr << "Asked to create a joint between links "
              << "[" << parentName << "] as parent and ["
