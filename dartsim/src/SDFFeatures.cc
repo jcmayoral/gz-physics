@@ -739,9 +739,7 @@ Identity SDFFeatures::ConstructSdfLink(
       world->getName(),
       ::sdf::JoinName(modelInfo.model->getName(), bn->getName()));
 
-  std::size_t linkID;
-
-  linkID = this->AddLink(bn, fullName, _modelID);
+  const std::size_t linkID = this->AddLink(bn, fullName, _modelID);
 
   auto linkIdentity = this->GenerateIdentity(linkID, this->links.at(linkID));
 
@@ -805,7 +803,6 @@ Identity SDFFeatures::ConstructSdfLink(
       }
     }
   }*/
- gzwarn << "EMD FUNCTION " << bodyProperties.mName << std::endl;
 
   return linkIdentity;
 }
