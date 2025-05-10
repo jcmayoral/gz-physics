@@ -691,9 +691,58 @@ Identity SDFFeatures::ConstructSdfLink(
   const Eigen::Isometry3d tf =
       GetParentModelFrame(modelInfo) * ResolveSdfPose(_sdfLink.SemanticPose());
 
-  joint->setTransform(tf);
+  const bool isKinematic = _sdfLink.Kinematic();
+  dart::dynamics::FreeJoint::Properties jointProperties;
+  jointProperties.mName = bodyProperties.mName + "_FreeJoint";
 
-  dart::dynamics::BodyNode * const bn = result.second;
+  dart::dynamics::BodyNode * bn;
+
+  if(isKinematic){
+    gzdbg << "Kinematic tag found" << bodyProperties.mName << std::endl;
+    bodyProperties.mInertia.setMass(sdfInertia.MassMatrix().Mass());
+    bodyProperties.mGravityMode = _sdfLink.EnableGravity();
+    bodyProperties.mInertia.setMoment(I_link);
+   
+    bodyProperties.mInertia.setLocalCOM(localCom);  
+    bodyProperties.mFrictionCoeff = 0;
+
+    //jointProperties.mActuatorType = dart::dynamics::Joint::ActuatorType::PASSIVE;
+    //jointProperties.mName = bodyProperties.mName + "_KinematicJoint";
+
+    auto result = modelInfo.model->createJointAndBodyNodePair<
+      dart::dynamics::KinematicJoint>(nullptr, jointProperties, bodyProperties);
+      // result.first->setAccelerations(Eigen::Vector6d::Zero());
+      //`result.second->setAccelerations(Eigen::Vector6d::Zero());
+
+    dart::dynamics::KinematicJoint * const joint = result.first;  
+    joint->setTransform(tf);
+
+    bn = result.second;
+  }
+    
+  else{
+    jointProperties.mName = bodyProperties.mName + "_KinematicJoint";
+
+    bodyProperties.mInertia.setMass(sdfInertia.MassMatrix().Mass());
+    bodyProperties.mInertia.setMoment(I_link);
+    bodyProperties.mInertia.setLocalCOM(localCom);  
+    bodyProperties.mGravityMode = _sdfLink.EnableGravity();
+    bodyProperties.mFrictionCoeff = 0;
+    // Note: When constructing a link from this function, we always instantiate
+    // it as a standalone free body within the model. If it should have any joint
+    // constraints, those will be added later.
+
+    // TODO(MXG): Consider adding a UUID to this joint name in order to avoid any
+    // potential (albeit unlikely) name collisions.
+
+    auto result = modelInfo.model->createJointAndBodyNodePair<
+      dart::dynamics::FreeJoint>(nullptr, jointProperties, bodyProperties);
+
+    dart::dynamics::FreeJoint * const joint = result.first;
+    joint->setTransformFromParentBodyNode(tf);
+
+    bn = result.second;
+  }
 
   auto worldID = this->GetWorldOfModelImpl(_modelID);
   if (worldID == INVALID_ENTITY_ID)
