@@ -680,14 +680,14 @@ Identity SDFFeatures::ConstructSdfLink(
   const Eigen::Isometry3d tf =
       GetParentModelFrame(modelInfo) * ResolveSdfPose(_sdfLink.SemanticPose());
 
-  bool isKinematic = _sdfLink.Kinematic();
+  const bool isKinematic = _sdfLink.Kinematic();
   dart::dynamics::FreeJoint::Properties jointProperties;
   jointProperties.mName = bodyProperties.mName + "_FreeJoint";
 
   dart::dynamics::BodyNode * bn;
 
   if(isKinematic){
-    gzerr << "Kinematic tag found" << bodyProperties.mName << std::endl;
+    gzdbg << "Kinematic tag found" << bodyProperties.mName << std::endl;
     bodyProperties.mInertia.setMass(sdfInertia.MassMatrix().Mass());
     bodyProperties.mGravityMode = _sdfLink.EnableGravity();
     bodyProperties.mInertia.setMoment(I_link);
@@ -710,7 +710,6 @@ Identity SDFFeatures::ConstructSdfLink(
   }
     
   else{
-    gzerr << "Kinematic tag not found " << bodyProperties.mName << std::endl;
     jointProperties.mName = bodyProperties.mName + "_KinematicJoint";
 
     bodyProperties.mInertia.setMass(sdfInertia.MassMatrix().Mass());
