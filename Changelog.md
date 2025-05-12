@@ -1,3 +1,94 @@
+## Gazebo Physics 8.x
+
+### Gazebo Physics 8.1.0 (2025-02-12)
+
+1. bullet-featherstone: Remove joint motor constraint on joint force cmd
+    * [Pull request #713](https://github.com/gazebosim/gz-physics/pull/713)
+
+1. ci.yml: run cppcheck, cpplint on noble
+    * [Pull request #710](https://github.com/gazebosim/gz-physics/pull/710)
+
+1. Support setting max contacts in dart's bullet collision detector
+    * [Pull request #593](https://github.com/gazebosim/gz-physics/pull/593)
+
+1. Prevent crash when objects move to invalid poses
+    * [Pull request #706](https://github.com/gazebosim/gz-physics/pull/706)
+
+1. bullet-featherstone: Fix finding free group for a body with fixed base
+    * [Pull request #700](https://github.com/gazebosim/gz-physics/pull/700)
+
+1. bullet-featherstone: Reset joint motor constraint's velocity target after each step
+    * [Pull request #699](https://github.com/gazebosim/gz-physics/pull/699)
+
+1. Update physics_plugins tutorial
+    * [Pull request #687](https://github.com/gazebosim/gz-physics/pull/687)
+
+### Gazebo Physics 8.0.0 (2024-09-25)
+
+1. **Baseline:** this includes all changes from 7.3.0 and earlier.
+
+1. Miscellaneous documentation fixes
+    * [Pull request #691](https://github.com/gazebosim/gz-physics/pull/691)
+    * [Pull request #689](https://github.com/gazebosim/gz-physics/pull/689)
+    * [Pull request #690](https://github.com/gazebosim/gz-physics/pull/690)
+    * [Pull request #688](https://github.com/gazebosim/gz-physics/pull/688)
+    * [Pull request #686](https://github.com/gazebosim/gz-physics/pull/686)
+    * [Pull request #684](https://github.com/gazebosim/gz-physics/pull/684)
+    * [Pull request #683](https://github.com/gazebosim/gz-physics/pull/683)
+    * [Pull request #682](https://github.com/gazebosim/gz-physics/pull/682)
+    * [Pull request #681](https://github.com/gazebosim/gz-physics/pull/681)
+
+1. Remove deprecated functions
+    * [Pull request #673](https://github.com/gazebosim/gz-physics/pull/673)
+
+1. Enable 24.04 CI, require cmake 3.22.1
+    * [Pull request #671](https://github.com/gazebosim/gz-physics/pull/671)
+
+1. bullet-featherstone: Support empty links
+    * [Pull request #665](https://github.com/gazebosim/gz-physics/pull/665)
+
+1. Fix CTAD compile warnings
+    * [Pull request #663](https://github.com/gazebosim/gz-physics/pull/663)
+
+1. bullet-featherstone: Enforce joint velocity and effort limits for velocity control commands
+    * [Pull request #658](https://github.com/gazebosim/gz-physics/pull/658)
+
+1. Add Cone as a collision shape
+    * [Pull request #639](https://github.com/gazebosim/gz-physics/pull/639)
+
+1. dartsim: optimize picking contact points with ODE collision detector
+    * [Pull request #584](https://github.com/gazebosim/gz-physics/pull/584)
+
+1. Add no gravity link support
+    * [Pull request #633](https://github.com/gazebosim/gz-physics/pull/633)
+
+1. bullet-featherstone: Support convex decomposition for meshes
+    * [Pull request #606](https://github.com/gazebosim/gz-physics/pull/606)
+
+1. Find python directly instead of using GzPython
+    * [Pull request #625](https://github.com/gazebosim/gz-physics/pull/625)
+
+1. Fix unused variable warning
+    * [Pull request #624](https://github.com/gazebosim/gz-physics/pull/624)
+
+1. Support setting solver iterations
+    * [Pull request #609](https://github.com/gazebosim/gz-physics/pull/609)
+
+1. Define `GZ_PHYSICS_VERSION_NAMESPACE` in config.hh
+    * [Pull request #597](https://github.com/gazebosim/gz-physics/pull/597)
+
+1. Remove `HIDE_SYMBOLS_BY_DEFAULT`: replace by a default configuration in gz-cmake.
+    * [Pull request #588](https://github.com/gazebosim/gz-physics/pull/588)
+
+1. Use `HIDE_SYMBOLS_BY_DEFAULT`
+    * [Pull request #576](https://github.com/gazebosim/gz-physics/pull/576)
+
+1. Bump dependency versions: gz-cmake4, gz-common6, gz-math8, gz-plugin3, gz-utils3, sdformat15
+    * [Pull request #561](https://github.com/gazebosim/gz-physics/pull/561)
+
+1. Bump major version to 8
+    * [Pull request #560](https://github.com/gazebosim/gz-physics/pull/560)
+
 ## Gazebo Physics 7.x
 
 ### Gazebo Physics 7.5.0 (2025-01-30)
