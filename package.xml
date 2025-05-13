@@ -9,7 +9,7 @@
 
   <buildtool_depend>cmake</buildtool_depend>
 
-  <build_depend>gz-cmake4</build_depend>
+  <build_depend>gz-cmake3</build_depend>
 
   <depend>benchmark</depend>
   <depend>bullet</depend>
