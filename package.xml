@@ -15,10 +15,10 @@
   <depend>bullet</depend>
   <depend>DART</depend>
   <depend>eigen</depend>
-  <depend>gz-common6</depend>
-  <depend>gz-math8</depend>
-  <depend>gz-plugin3</depend>
-  <depend>gz-utils3</depend>
+  <depend>gz-common5</depend>
+  <depend>gz-math7</depend>
+  <depend>gz-plugin2</depend>
+  <depend>gz-utils2</depend>
   <depend>sdformat15</depend>
 
   <export>
