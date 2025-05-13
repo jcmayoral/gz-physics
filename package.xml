@@ -19,7 +19,7 @@
   <depend>gz-math7</depend>
   <depend>gz-plugin2</depend>
   <depend>gz-utils2</depend>
-  <depend>sdformat15</depend>
+  <depend>sdformat14</depend>
 
   <export>
     <build_type>cmake</build_type>
