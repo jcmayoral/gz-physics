@@ -676,8 +676,6 @@ Identity SDFFeatures::ConstructSdfLink(
 
   bodyProperties.mGravityMode = _sdfLink.EnableGravity();
 
-  dart::dynamics::FreeJoint::Properties jointProperties;
-  jointProperties.mName = bodyProperties.mName + "_FreeJoint";
   // TODO(MXG): Consider adding a UUID to this joint name in order to avoid any
   // potential (albeit unlikely) name collisions.
 
@@ -699,6 +697,8 @@ Identity SDFFeatures::ConstructSdfLink(
 
   if(isKinematic){
     gzdbg << "Kinematic tag found" << bodyProperties.mName << std::endl;
+    jointProperties.mName = bodyProperties.mName + "_KinematicJoint";
+
     bodyProperties.mInertia.setMass(sdfInertia.MassMatrix().Mass());
     bodyProperties.mGravityMode = _sdfLink.EnableGravity();
     bodyProperties.mInertia.setMoment(I_link);
@@ -721,8 +721,6 @@ Identity SDFFeatures::ConstructSdfLink(
   }
     
   else{
-    jointProperties.mName = bodyProperties.mName + "_KinematicJoint";
-
     bodyProperties.mInertia.setMass(sdfInertia.MassMatrix().Mass());
     bodyProperties.mInertia.setMoment(I_link);
     bodyProperties.mInertia.setLocalCOM(localCom);  
