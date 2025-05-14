@@ -31,6 +31,7 @@
 #include <dart/dynamics/CylinderShape.hpp>
 #include <dart/dynamics/EllipsoidShape.hpp>
 #include <dart/dynamics/FreeJoint.hpp>
+#include <dart/dynamics/KinematicJoint.hpp>
 #include <dart/dynamics/HeightmapShape.hpp>
 #include <dart/dynamics/MeshShape.hpp>
 #include <dart/dynamics/PlaneShape.hpp>
@@ -682,10 +683,6 @@ Identity SDFFeatures::ConstructSdfLink(
   // Note: When constructing a link from this function, we always instantiate
   // it as a standalone free body within the model. If it should have any joint
   // constraints, those will be added later.
-  const auto result = modelInfo.model->createJointAndBodyNodePair<
-      dart::dynamics::FreeJoint>(nullptr, jointProperties, bodyProperties);
-
-  dart::dynamics::FreeJoint * const joint = result.first;
   const Eigen::Isometry3d tf =
       GetParentModelFrame(modelInfo) * ResolveSdfPose(_sdfLink.SemanticPose());
 
