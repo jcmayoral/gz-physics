@@ -38,16 +38,22 @@ Identity FreeGroupFeatures::FindFreeGroupForModel(
   if (skeleton->getNumBodyNodes() == 0 && modelInfo->nestedModels.empty())
     return this->GenerateInvalidId();
 
-  // Verify that all root joints are FreeJoints
+  // Verify that all root joints are FreeJoints or KinematicJoints
   for (std::size_t i = 0; i < skeleton->getNumTrees(); ++i)
   {
     if (skeleton->getRootJoint(i)->getType()
-        != dart::dynamics::FreeJoint::getStaticType())
+        != dart::dynamics::FreeJoint::getStaticType() &&
+        skeleton->getRootJoint(i)->getType()
+        != gz::dynamics::KinematicJoint::getStaticType())
     {
       return this->GenerateInvalidId();
     }
   }
 
+  if (modelInfo->nestedModels.empty())
+    return _modelID;
+
+  bool nestedModelHasFreeGroup = false;
   for (const auto &nestedModel : modelInfo->nestedModels)
   {
     // Check that each nested model with BodyNodes or nested models has valid
@@ -65,13 +71,18 @@ Identity FreeGroupFeatures::FindFreeGroupForModel(
       {
         return this->GenerateInvalidId();
       }
+      else
+      {
+        nestedModelHasFreeGroup = true;
+      }
     }
   }
+  if (skeleton->getNumBodyNodes() == 0 && !nestedModelHasFreeGroup)
+    return this->GenerateInvalidId();
 
   // TODO(MXG): When the dartsim plugin supports closed-loop constraints, verify
   // that this model is not attached to the world or any other models. If it's
   // attached to anything external, then we should return an invalid identity.
-
   return _modelID;
 }
 
@@ -85,7 +96,9 @@ Identity FreeGroupFeatures::FindFreeGroupForLink(
   while (bn)
   {
     if (bn->getParentJoint()->getType()
-        == dart::dynamics::FreeJoint::getStaticType())
+        == dart::dynamics::FreeJoint::getStaticType() ||
+        bn->getParentJoint()->getType()
+        == gz::dynamics::KinematicJoint::getStaticType())
     {
       break;
     }
@@ -106,7 +119,10 @@ Identity FreeGroupFeatures::FindFreeGroupForLink(
 Identity FreeGroupFeatures::GetFreeGroupRootLink(const Identity &_groupID) const
 {
   const FreeGroupInfo &info = GetCanonicalInfo(_groupID);
-  return this->GenerateIdentity(this->links.IdentityOf(info.link));
+  if (info.link)
+    return this->GenerateIdentity(this->links.IdentityOf(info.link));
+
+  return this->GenerateInvalidId();
 }
 
 /////////////////////////////////////////////////

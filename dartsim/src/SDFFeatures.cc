@@ -18,6 +18,7 @@
 #include "SDFFeatures.hh"
 
 #include <cmath>
+#include <cstddef>
 #include <limits>
 #include <memory>
 #include <string>
@@ -243,6 +244,36 @@ static dart::dynamics::UniversalJoint *ConstructUniversalJoint(
   }
 
   return _child->moveTo<dart::dynamics::UniversalJoint>(_parent, properties);
+}
+
+/////////////////////////////////////////////////
+template <typename JointType>
+static JointType *ConstructBallJoint(
+    const ModelInfo &/*_modelInfo*/,
+    const ::sdf::Joint &_sdfJoint,
+    dart::dynamics::BodyNode * const _parent,
+    dart::dynamics::BodyNode * const _child,
+    const Eigen::Isometry3d &/*_T_joint*/)
+{
+  // SDF does not support any of the properties for ball joint, besides the
+  // name and relative transforms to its parent and child.
+  //
+  // To set other properties like joint limits, stiffness, etc,
+  // apply values in <axis> to all 3 DoF.
+  typename JointType::Properties properties;
+
+  const ::sdf::JointAxis * const sdfAxis = _sdfJoint.Axis(0);
+
+  // use default properties if sdfAxis is not set, otherwise apply to all DoF
+  if (sdfAxis)
+  {
+    for (const std::size_t index : {0u, 1u, 2u})
+    {
+      CopyStandardJointAxisProperties(index, properties, sdfAxis);
+    }
+  }
+
+  return _child->moveTo<JointType>(_parent, properties);
 }
 
 /////////////////////////////////////////////////
@@ -672,28 +703,59 @@ Identity SDFFeatures::ConstructSdfLink(
   const Eigen::Vector3d localCom =
       math::eigen3::convert(sdfInertia.Pose().Pos());
 
+  const bool isKinematic = _sdfLink.Kinematic();
+
   bodyProperties.mInertia.setLocalCOM(localCom);
 
   bodyProperties.mGravityMode = _sdfLink.EnableGravity();
 
   dart::dynamics::FreeJoint::Properties jointProperties;
   jointProperties.mName = bodyProperties.mName + "_FreeJoint";
-  // TODO(MXG): Consider adding a UUID to this joint name in order to avoid any
-  // potential (albeit unlikely) name collisions.
 
-  // Note: When constructing a link from this function, we always instantiate
-  // it as a standalone free body within the model. If it should have any joint
-  // constraints, those will be added later.
-  const auto result = modelInfo.model->createJointAndBodyNodePair<
-      dart::dynamics::FreeJoint>(nullptr, jointProperties, bodyProperties);
+  dart::dynamics::BodyNode * bn;
 
-  dart::dynamics::FreeJoint * const joint = result.first;
+  bodyProperties.mInertia.setMass(sdfInertia.MassMatrix().Mass());
+  bodyProperties.mGravityMode = _sdfLink.EnableGravity();
+  bodyProperties.mInertia.setMoment(I_link);
+
+  bodyProperties.mInertia.setLocalCOM(localCom);
+  bodyProperties.mFrictionCoeff = 0;
+
   const Eigen::Isometry3d tf =
       GetParentModelFrame(modelInfo) * ResolveSdfPose(_sdfLink.SemanticPose());
 
-  joint->setTransform(tf);
+  if(isKinematic){
+    gzdbg << "Kinematic tag found -> " << bodyProperties.mName << std::endl;
+    jointProperties.mName = bodyProperties.mName + "_KinematicJoint";
+    bodyProperties.mGravityMode = false;
 
-  dart::dynamics::BodyNode * const bn = result.second;
+    auto result = modelInfo.model->createJointAndBodyNodePair<
+      gz::dynamics::KinematicJoint>(nullptr, jointProperties, bodyProperties);
+
+    auto const joint = result.first;
+    joint->setTransform(tf);
+
+    bn = result.second;
+  }
+
+  else
+  {
+    // Note: When constructing a link from this function, we always instantiate
+    // it as a standalone free body within the model. If it should have any
+    // joint constraints, those will be added later.
+
+    // TODO(MXG): Consider adding a UUID to this joint name in order to avoid
+    // any sspotential (albeit unlikely) name collisions.
+
+    auto result = modelInfo.model->createJointAndBodyNodePair<
+      dart::dynamics::FreeJoint>(nullptr, jointProperties, bodyProperties);
+
+    dart::dynamics::FreeJoint * const joint = result.first;
+    joint->setTransform(tf);
+
+    bn = result.second;
+  }
+
 
   auto worldID = this->GetWorldOfModelImpl(_modelID);
   if (worldID == INVALID_ENTITY_ID)
@@ -1106,7 +1168,8 @@ Identity SDFFeatures::ConstructSdfJoint(
   {
     auto childsParentJoint = _child->getParentJoint();
     std::string parentName = worldParent? "world" : _parent->getName();
-    if (childsParentJoint->getType() != "FreeJoint")
+    if (childsParentJoint->getType() != "FreeJoint" &&
+        childsParentJoint->getType() != "KinematicJoint")
     {
       gzerr << "Asked to create a joint between links "
              << "[" << parentName << "] as parent and ["
@@ -1138,11 +1201,8 @@ Identity SDFFeatures::ConstructSdfJoint(
 
   if (::sdf::JointType::BALL == type)
   {
-    // SDF does not support any of the properties for ball joint, besides the
-    // name and relative transforms to its parent and child, which will be taken
-    // care of below. All other properties like joint limits, stiffness, etc,
-    // will be the default values of +/- infinity or 0.0.
-    joint = _child->moveTo<dart::dynamics::BallJoint>(_parent);
+    joint = ConstructBallJoint<dart::dynamics::BallJoint>(
+          _modelInfo, _sdfJoint, _parent, _child, T_joint);
   }
   // TODO(MXG): Consider adding dartsim support for a CONTINUOUS joint type.
   // Alternatively, support the CONTINUOUS joint type by wrapping the
