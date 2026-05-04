@@ -21,6 +21,7 @@
 #include <gz/physics/FeatureList.hh>
 #include <gz/physics/ForwardStep.hh>
 #include <gz/physics/Geometry.hh>
+#include <gz/physics/RayIntersection.hh>
 #include <gz/physics/SpecifyData.hh>
 
 namespace gz
@@ -32,22 +33,9 @@ namespace physics
 class GZ_PHYSICS_VISIBLE GetRayIntersectionFromLastStepFeature
     : public virtual FeatureWithRequirements<ForwardStep>
 {
+  /// \brief Alias to the shared ray intersection result type.
   public: template <typename PolicyT>
-  struct RayIntersectionT
-  {
-    public: using Scalar = typename PolicyT::Scalar;
-    public: using VectorType =
-      typename FromPolicy<PolicyT>::template Use<LinearVector>;
-
-    /// \brief The hit point in the world coordinates
-    VectorType point;
-
-    /// \brief The fraction of the ray length at the intersection/hit point.
-    Scalar fraction;
-
-    /// \brief The normal at the hit point in the world coordinates
-    VectorType normal;
-  };
+  using RayIntersectionT = gz::physics::RayIntersectionT<PolicyT>;
 
   public: template <typename PolicyT, typename FeaturesT>
   class World : public virtual Feature::World<PolicyT, FeaturesT>

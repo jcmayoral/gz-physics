@@ -22,6 +22,7 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 
 #include <dart/collision/CollisionObject.hpp>
@@ -38,8 +39,11 @@
 #include <gz/math/Pose3.hh>
 #include <gz/math/eigen3/Conversions.hh>
 
+#include "gz/physics/GetBatchRayIntersection.hh"
+
 #include "gz/physics/GetContacts.hh"
 
+#include "GzCollisionDetector.hh"
 #include "SimulationFeatures.hh"
 
 #if DART_VERSION_AT_LEAST(6, 13, 0)
@@ -227,15 +231,51 @@ SimulationFeatures::GetRayIntersectionFromLastStep(
   }
   else
   {
-    // Set invalid measurements to NaN according to REP-117
-    intersection.point =
-      Eigen::Vector3d::Constant(std::numeric_limits<double>::quiet_NaN());
-    intersection.normal =
-      Eigen::Vector3d::Constant(std::numeric_limits<double>::quiet_NaN());
-    intersection.fraction = std::numeric_limits<double>::quiet_NaN();
+        // No object in range: +INF fraction, NaN point/normal.
+    constexpr double kNaN = std::numeric_limits<double>::quiet_NaN();
+    intersection.point = Eigen::Vector3d::Constant(kNaN);
+    intersection.normal = Eigen::Vector3d::Constant(kNaN);
+    intersection.fraction = std::numeric_limits<double>::infinity();
   }
 
   return intersection;
+}
+
+/////////////////////////////////////////////////
+std::vector<SimulationFeatures::BatchRayIntersection>
+SimulationFeatures::GetBatchRayIntersectionFromLastStep(
+  const Identity &_worldID,
+  const std::vector<SimulationFeatures::BatchRayQuery> &_rays) const
+{
+  std::vector<SimulationFeatures::BatchRayIntersection> results;
+results.reserve(_rays.size());
+
+  if (_rays.empty())
+    return results;
+
+  auto world = std::static_pointer_cast<dart::simulation::World>(
+      this->Reference(_worldID));
+  if (!world)
+    return results;
+
+  auto solver = world->getConstraintSolver();
+  auto worldGroup = solver->getCollisionGroup();
+  auto detector = solver->getCollisionDetector();
+  
+  auto *gzDetector = dynamic_cast<dart::collision::GzCollisionDetector *>(
+    detector.get());
+
+  if (gzDetector && worldGroup)
+  {
+    // 5. Disparar los rayos contra el grupo nativo del simulador
+    auto gzResults = gzDetector->BatchRaycast(worldGroup.get(), _rays);
+    if (gzResults)
+    {
+      return std::move(*gzResults);
+    }
+  }
+
+  return results;
 }
 
 std::vector<SimulationFeatures::ContactInternal>
